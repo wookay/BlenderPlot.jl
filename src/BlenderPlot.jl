@@ -1,5 +1,9 @@
 module BlenderPlot
 
-# package code goes here
+using PyCall
+@pyimport bpy
+
+include("pycall/util.jl")
+include("pycall/plot.jl")
 
 end # module
