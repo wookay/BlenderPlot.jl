@@ -1,6 +1,8 @@
 export plot
 
 function plot(f::F, start, stop) where {F <: Function}
+
+    # code from https://blender.stackexchange.com/a/49013
     scene = bpy.context[:scene]
 
     if scene[:grease_pencil] isa Void
@@ -41,7 +43,6 @@ function plot(f::F, start, stop) where {F <: Function}
     str = fr[:strokes][:new]()
     str[:draw_mode] = "3DSPACE"
     str[:points][:add](count = strokeLength)
-    #str[:color][:color]
     points = str[:points]
 
     lin = linspace(start, stop, strokeLength)
