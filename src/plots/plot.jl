@@ -1,4 +1,4 @@
-export plot, lineplot, scatterplot
+export plot, lineplot, scatterplot, spy
 
 function get_color_in_palette(c, palette)
     # TODO
@@ -111,5 +111,21 @@ function scatterplot(xs, ys; color::ColorT=RGB(1,1,0)) where {ColorT <: Union{RG
     for vert in verts
         bpy.ops[:mesh][:primitive_circle_add](vertices=6, radius=0.05, fill_type="NGON", location=vert)
         bpy.context[:object][:data][:materials][:append](mat)
+    end
+end
+
+function spy(sp::SparseMatrixCSC)
+    turkeyred = RGB(169/255, 17/255, 1/255)
+    cobaltblue = RGB(0, 71/255, 171/255)
+    positive = bpy.data[:materials][:new]("Positive")
+    positive[:diffuse_color] = (turkeyred.r, turkeyred.g, turkeyred.b)
+    negative = bpy.data[:materials][:new]("Negative")
+    negative[:diffuse_color] = (cobaltblue.r, cobaltblue.g, cobaltblue.b)
+    scale = 0.1
+    rows, cols, vals = findnz(sp)
+    for (row, col, val) in zip(rows, cols, vals)
+        vert = scale .* (row, col, 0)
+        bpy.ops[:mesh][:primitive_circle_add](vertices=6, radius=0.05, fill_type="NGON", location=vert)
+        bpy.context[:object][:data][:materials][:append](val > 0 ? positive : negative)
     end
 end
