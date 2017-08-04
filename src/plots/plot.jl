@@ -5,7 +5,15 @@ function get_color_in_palette(c, palette)
     nothing
 end
 
-function plot_base(strokeLength, color)
+yellow = RGB(1,1,0)
+green = RGB(0,1,0)
+magenta = RGB(1,0,1)
+cyan = RGB(0,1,1)
+red = RGB(1,0,0)
+blue = RGB(0,0,1)
+const color_palettes = [yellow, green, magenta, cyan, red, blue]
+
+function plot_base(strokeLength, color, show_points::Bool)
     # code from https://blender.stackexchange.com/a/49013
     scene = bpy.context[:scene]
 
@@ -31,10 +39,10 @@ function plot_base(strokeLength, color)
     end
 
     gp = scene[:grease_pencil]
-    if isempty(gp[:layers])
-        gpl = gp[:layers][:new]("gpl", set_active=true, show_points=true)
-    else
-        gpl = gp[:layers][1]
+    gpl = gp[:layers][:new]("gpl", set_active=true)
+    gpl[:show_points] = show_points
+    if color == :default
+        color = distinguishable_colors(length(gp[:layers]), color_palettes)[end]
     end
 
     if isempty(gpl[:frames])
@@ -75,16 +83,16 @@ function plot(fs::Vector{F}, start, stop; kwargs...) where {F <: Function}
     lineplot(fs, start, stop; kwargs...)
 end
 
-function lineplot(xs, ys; color::ColorT=RGB(1,1,0)) where {ColorT <: Union{RGB, RGBA}}
-    points = plot_base(length(xs), color)
+function lineplot(xs, ys; color::ColorT=:default) where {ColorT <: Union{Symbol, RGB, RGBA}}
+    points = plot_base(length(xs), color, true)
     for (point, x, y) in zip(points, xs, ys)
         point[:co] = (x, y, 0)
     end
 end
 
-function lineplot(f::F, start, stop; color::ColorT=RGB(1,1,0)) where {F <: Function, ColorT <: Union{RGB, RGBA}}
+function lineplot(f::F, start, stop; color::ColorT=:default) where {F <: Function, ColorT <: Union{Symbol, RGB, RGBA}}
     strokeLength = 500
-    points = plot_base(strokeLength, color)
+    points = plot_base(strokeLength, color, false)
     lin = linspace(start, stop, strokeLength)
     for (idx, point) in enumerate(points)
         point[:co] = (lin[idx], f(lin[idx]), 0)
@@ -92,19 +100,13 @@ function lineplot(f::F, start, stop; color::ColorT=RGB(1,1,0)) where {F <: Funct
 end
 
 function lineplot(fs::Vector{F}, start, stop) where {F <: Function}
-    skyblue = RGB(135/255, 206/255, 235/255)
-    red = RGB(1,0,0)
-    yellow = RGB(1,1,0)
-    magenta = RGB(1,0,1)
-    green = RGB(0,1,0)
-    cyan = RGB(0,1,1)
-    colors = distinguishable_colors(length(fs), [skyblue, red, yellow, magenta, green, cyan])
+    colors = distinguishable_colors(length(fs), color_palettes)
     for (f, color) in zip(fs, colors)
         lineplot(f, start, stop; color=color)
     end
 end
 
-function scatterplot(xs, ys; color::ColorT=RGB(1,1,0)) where {ColorT <: Union{RGB, RGBA}}
+function scatterplot(xs, ys; color::ColorT=:default) where {ColorT <: Union{Symbol, RGB, RGBA}}
     verts = collect(zip(xs, ys, zeros(length(xs))))
     mat = bpy.data[:materials][:new]("Color")
     mat[:diffuse_color] = (color.r, color.g, color.b)
@@ -115,8 +117,8 @@ function scatterplot(xs, ys; color::ColorT=RGB(1,1,0)) where {ColorT <: Union{RG
 end
 
 function spy(sp::SparseMatrixCSC)
-    turkeyred = RGB(169/255, 17/255, 1/255)
     cobaltblue = RGB(0, 71/255, 171/255)
+    turkeyred = RGB(169/255, 17/255, 1/255)
     positive = bpy.data[:materials][:new]("Positive")
     positive[:diffuse_color] = (turkeyred.r, turkeyred.g, turkeyred.b)
     negative = bpy.data[:materials][:new]("Negative")
