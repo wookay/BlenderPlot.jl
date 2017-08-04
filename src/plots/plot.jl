@@ -1,4 +1,4 @@
-export plot, lineplot
+export plot, lineplot, scatterplot
 
 function get_color_in_palette(c, palette)
     # TODO
@@ -32,7 +32,7 @@ function plot_base(strokeLength, color)
 
     gp = scene[:grease_pencil]
     if isempty(gp[:layers])
-        gpl = gp[:layers][:new]("gpl", set_active=true)
+        gpl = gp[:layers][:new]("gpl", set_active=true, show_points=true)
     else
         gpl = gp[:layers][1]
     end
@@ -101,5 +101,15 @@ function lineplot(fs::Vector{F}, start, stop) where {F <: Function}
     colors = distinguishable_colors(length(fs), [skyblue, red, yellow, magenta, green, cyan])
     for (f, color) in zip(fs, colors)
         lineplot(f, start, stop; color=color)
+    end
+end
+
+function scatterplot(xs, ys; color::ColorT=RGB(1,1,0)) where {ColorT <: Union{RGB, RGBA}}
+    verts = collect(zip(xs, ys, zeros(length(xs))))
+    mat = bpy.data[:materials][:new]("Color")
+    mat[:diffuse_color] = (color.r, color.g, color.b)
+    for vert in verts
+        bpy.ops[:mesh][:primitive_circle_add](vertices=6, radius=0.05, fill_type="NGON", location=vert)
+        bpy.context[:object][:data][:materials][:append](mat)
     end
 end
