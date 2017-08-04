@@ -1,17 +1,17 @@
+#__precompile__()
+
 module BlenderPlot
 
 using PyCall
+using Colors
 
-if endswith(unsafe_string(Base.JLOptions().julia_bin), "julia")
-    warn("Please run on the Blender Julia Console")
-else
-    export bpy, bpy_extras, bgl, mathutils
-    @pyimport bpy
-    @pyimport bpy_extras
-    @pyimport bgl
-    @pyimport mathutils
-    include("pycall/plot.jl")
-    include("pycall/util.jl")
-end
+include("utils/blenders.jl")
+
+include("utils/colors.jl")
+include("utils/extensions.jl")
+include("utils/pyload.jl")
+include("utils/ui.jl")
+
+include("plots/plot.jl")
 
 end # module
