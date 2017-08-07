@@ -41,7 +41,7 @@ function plot_base(strokeLength, color, show_points::Bool)
     gp = scene[:grease_pencil]
     gpl = gp[:layers][:new]("gpl", set_active=true)
     gpl[:show_points] = show_points
-    if color == :default
+    if color isa Void
         color = distinguishable_colors(length(gp[:layers]), color_palettes)[end]
     end
 
@@ -71,8 +71,16 @@ function plot_base(strokeLength, color, show_points::Bool)
     points = str[:points]
 end
 
+function plot(ys; kwargs...)
+    lineplot(ys; kwargs...)
+end
+
 function plot(xs, ys; kwargs...)
     lineplot(xs, ys; kwargs...)
+end
+
+function plot(xs, ys, zs; kwargs...)
+    lineplot(xs, ys, zs; kwargs...)
 end
 
 function plot(f::F, start, stop; kwargs...) where {F <: Function}
@@ -83,14 +91,22 @@ function plot(fs::Vector{F}, start, stop; kwargs...) where {F <: Function}
     lineplot(fs, start, stop; kwargs...)
 end
 
-function lineplot(xs, ys; color::ColorT=:default) where {ColorT <: Union{Symbol, RGB, RGBA}}
+function lineplot(ys::AbstractVector; args...)
+    lineplot(1:length(ys), ys; args...)
+end
+
+function lineplot(xs::AbstractVector, ys::AbstractVector; args...)
+    lineplot(xs, ys, zeros(length(xs)); args...)
+end
+
+function lineplot(xs::AbstractVector, ys::AbstractVector, zs::AbstractVector; color::ColorT=nothing) where {ColorT <: Union{Void, RGB, RGBA}}
     points = plot_base(length(xs), color, true)
-    for (point, x, y) in zip(points, xs, ys)
-        point[:co] = (x, y, 0)
+    for (point, x, y, z) in zip(points, xs, ys, zs)
+        point[:co] = (x, y, z)
     end
 end
 
-function lineplot(f::F, start, stop; color::ColorT=:default) where {F <: Function, ColorT <: Union{Symbol, RGB, RGBA}}
+function lineplot(f::F, start, stop; color::ColorT=nothing) where {F <: Function, ColorT <: Union{Void, RGB, RGBA}}
     strokeLength = 500
     points = plot_base(strokeLength, color, false)
     lin = linspace(start, stop, strokeLength)
@@ -106,8 +122,29 @@ function lineplot(fs::Vector{F}, start, stop) where {F <: Function}
     end
 end
 
-function scatterplot(xs, ys; color::ColorT=:default) where {ColorT <: Union{Symbol, RGB, RGBA}}
-    verts = collect(zip(xs, ys, zeros(length(xs))))
+function lineplot(v::Vector{Tuple{T,T,T}}; color::ColorT=nothing) where {T <: Real, ColorT <: Union{Void, RGB, RGBA}}
+    if color isa Void
+        color = color_palettes[1]
+    end
+    points = plot_base(length(v), color, true)
+    for (point, co) in zip(points, v)
+        point[:co] = co
+    end
+end
+
+function scatterplot(xs, ys; kwargs...)
+    scatterplot(xs, ys, zeros(length(xs)); kwargs...)
+end
+
+function scatterplot(xs, ys, zs; kwargs...)
+    verts = collect(zip(xs, ys, zs))
+    scatterplot(verts; kwargs...)
+end
+
+function scatterplot(verts::Vector{Tuple{T,T,T}}; color::ColorT=nothing) where {T <: Real, ColorT <: Union{Void, RGB, RGBA}}
+    if color isa Void
+        color = color_palettes[2]
+    end
     mat = bpy.data[:materials][:new]("Color")
     mat[:diffuse_color] = (color.r, color.g, color.b)
     for vert in verts

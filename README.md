@@ -39,4 +39,7 @@ julia> plot(sin, -2pi, 2pi)
 ```
 
 - press `7` for top orthographic view
- <img src="examples/plot_sin.png" width="347" height="222.5" />
+ <img src="examples/plot.png" width="366" height="258.4" />
+ <img src="examples/lineplot.png" width="366" height="258.4" />
+ <img src="examples/scatterplot.png" width="366" height="258.4" />
+ <img src="examples/spy.png" width="366" height="258.4" />
