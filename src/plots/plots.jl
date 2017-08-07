@@ -91,12 +91,12 @@ function plot(fs::Vector{F}, start, stop; kwargs...) where {F <: Function}
     lineplot(fs, start, stop; kwargs...)
 end
 
-function lineplot(ys::AbstractVector; args...)
-    lineplot(1:length(ys), ys; args...)
+function lineplot(ys::AbstractVector; kwargs...)
+    lineplot(1:length(ys), ys; kwargs...)
 end
 
-function lineplot(xs::AbstractVector, ys::AbstractVector; args...)
-    lineplot(xs, ys, zeros(length(xs)); args...)
+function lineplot(xs::AbstractVector, ys::AbstractVector; kwargs...)
+    lineplot(xs, ys, zeros(length(xs)); kwargs...)
 end
 
 function lineplot(xs::AbstractVector, ys::AbstractVector, zs::AbstractVector; color::ColorT=nothing) where {ColorT <: Union{Void, RGB, RGBA}}
@@ -119,16 +119,6 @@ function lineplot(fs::Vector{F}, start, stop) where {F <: Function}
     colors = distinguishable_colors(length(fs), color_palettes)
     for (f, color) in zip(fs, colors)
         lineplot(f, start, stop; color=color)
-    end
-end
-
-function lineplot(v::Vector{Tuple{T,T,T}}; color::ColorT=nothing) where {T <: Real, ColorT <: Union{Void, RGB, RGBA}}
-    if color isa Void
-        color = color_palettes[1]
-    end
-    points = plot_base(length(v), color, true)
-    for (point, co) in zip(points, v)
-        point[:co] = co
     end
 end
 

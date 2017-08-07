@@ -12,6 +12,7 @@ include("utils/extensions.jl")
 include("utils/pyload.jl")
 include("utils/ui.jl")
 
-include("plots/plot.jl")
+include("plots/plots.jl")
+include("plots/drawings.jl")
 
 end # module
