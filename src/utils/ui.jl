@@ -33,3 +33,15 @@ function clear(obj::BlenderObject)
 	    end
 	end
 end
+
+function clear()
+    clear(GPencil)
+    candidate_list = [item[:name] for item in bpy.data[:objects] if item[:type] == "MESH"]
+    for object_name in candidate_list
+        get(bpy.data[:objects], object_name)[:select] = true
+    end
+    bpy.ops[:object][:delete]()
+    for item in bpy.data[:meshes]
+        bpy.data[:meshes][:remove](item)
+    end
+end
