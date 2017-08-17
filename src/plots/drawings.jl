@@ -1,5 +1,9 @@
 export linedraw, vectordraw
 
+function linedraw(verts::Vector{Any}; kwargs...)
+    linedraw(map(x->tuple(x...), verts); kwargs...)
+end
+
 function linedraw(v::Vector{Tuple{T,T,T}}; color::ColorT=nothing) where {T <: Real, ColorT <: Union{Void, RGB, RGBA}}
     if color isa Void
         color = color_palettes[1]
