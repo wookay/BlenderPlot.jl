@@ -131,6 +131,10 @@ function scatterplot(xs, ys, zs; kwargs...)
     scatterplot(verts; kwargs...)
 end
 
+function scatterplot(verts::Vector{Any}; kwargs...)
+    scatterplot(map(x->tuple(x...), verts); kwargs...)
+end
+
 function scatterplot(verts::Vector{Tuple{T,T,T}}; color::ColorT=nothing) where {T <: Real, ColorT <: Union{Void, RGB, RGBA}}
     if color isa Void
         color = color_palettes[2]

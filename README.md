@@ -40,6 +40,23 @@ julia> plot(sin, -2pi, 2pi)
 
 - press `7` for top orthographic view
  <img src="examples/plot.png" width="366" height="258.4" />
+
+```julia
+julia> lineplot([cos, sin], -π/2, 2π)
+```
  <img src="examples/lineplot.png" width="366" height="258.4" />
+
+```julia
+julia> scatterplot(randn(50), randn(50))
+```
  <img src="examples/scatterplot.png" width="366" height="258.4" />
+
+```julia
+julia> spy(sprandn(50, 120, .05))
+```
  <img src="examples/spy.png" width="366" height="258.4" />
+
+```julia
+julia> include(Pkg.dir("BlenderPlot","examples","sphere.jl"))
+```
+ <img src="examples/sphere.gif"/>

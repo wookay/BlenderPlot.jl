@@ -1,9 +1,10 @@
+import Base: select
+export selected_objects, active_object
+
 export clear
 export GPencil
 
-import Base: select
-export selected_objects
-export active_object
+export make_edge, make_face
 
 function select(name::String)
     obj = get(bpy.data[:objects], name)
@@ -43,5 +44,25 @@ function clear()
     bpy.ops[:object][:delete]()
     for item in bpy.data[:meshes]
         bpy.data[:meshes][:remove](item)
+    end
+end
+
+function make_edge(ob, a, b)
+    bpy.ops[:object][:mode_set](mode="EDIT", toggle=false)
+    bm = bmesh.from_edit_mesh(ob[:data])
+    if any(edge -> ([a, b] .- 1) == map(v -> v[:index], edge[:verts]), bm[:edges])
+    else
+        edge = bm[:edges][:new](getindex.(bm[:verts], (a, b)))
+        ob[:data][:update]()
+    end
+end
+
+function make_face(ob, a, b, c)
+    bpy.ops[:object][:mode_set](mode="EDIT", toggle=false)
+    bm = bmesh.from_edit_mesh(ob[:data])
+    if any(face -> ([a, b, c] .- 1) == map(v -> v[:index], face[:verts]), bm[:faces])
+    else
+        face = bm[:faces][:new](getindex.(bm[:verts], (a, b, c)))
+        ob[:data][:update]()
     end
 end
