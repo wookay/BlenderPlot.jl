@@ -1,6 +1,11 @@
 # code from http://blenderscripting.blogspot.kr/2011/06/randomly-placing-vertices-around.html
 
-# include(Pkg.dir("BlenderPlot","examples","sphere.jl"))
+#=
+using UUIDs
+pkg = Base.PkgId(UUID("6f9089e0-67cb-11e8-0103-bd01b9f98f89"), "BlenderPlot")
+sourcepath = Base.locate_package(pkg)
+Base.include(normpath(dirname(sourcepath), "..", "examples", "sphere.jl"))
+=#
 
 using Rotations
 using Distances
