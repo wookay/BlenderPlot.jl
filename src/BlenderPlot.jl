@@ -1,9 +1,10 @@
-#__precompile__()
+__precompile__(false)
 
 module BlenderPlot
 
 using PyCall
 using Colors
+using SparseArrays
 
 include("utils/blenders.jl")
 

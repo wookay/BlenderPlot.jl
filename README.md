@@ -5,34 +5,53 @@ a prototype version of the 📊  plot on [Blender](https://www.blender.org/) usi
 
 # Build Blender
 
-- checkout from <https://github.com/wookay/blender>
-- edit for your environment ([see the commit](https://github.com/wookay/blender/commit/d8e919936ec189be1a0b13ff83215538516a78e9))
+- Clone from <https://github.com/wookay/blender>
+```sh
+cd ~/blender-build
+git clone https://github.com/wookay/blender
+```
+- Edit for your environment ([ref the commit](https://github.com/wookay/blender/commit/556f6878ea8b2c681918fa494225a0c189636121))
 - Building Blender for macOS <https://wiki.blender.org/index.php/Dev:Doc/Building_Blender/Mac>
+
+- Custom linking
+```sh
+cd ~/blender-build/build_darwin/bin/blender.app/Contents/Resources/2.79
+rm -rf python
+ln -s /usr/local/Frameworks/Python.framework/Versions/3.6 python
+cd ~/blender-build/build_darwin/bin/blender.app/Contents/Resources/2.79/scripts
+rm -rf modules
+ln -s ~/blender-build/blender/release/scripts/modules
+```
 
 
 # Install Julia, pyjulia
 
-- get Julia 0.6 <https://julialang.org/downloads/>
-- install pyjuila <https://github.com/JuliaPy/pyjulia>
+- Get Julia 0.7-alpha <https://julialang.org/downloads/>
+- Install pyjuila <https://github.com/wookay/pyjulia>
 
-# PyCall.jl, BlenderPlot.jl
-- add PyCall.jl
 
-```julia
-julia> Pkg.add("PyCall")
-```
+# Install PyCall.jl, BlenderPlot.jl
 
-- clone BlenderPlot.jl
+`julia>` type `]` key
 
 ```julia
-julia> Pkg.clone("https://github.com/wookay/BlenderPlot.jl")
+(v0.7) pkg> add PyCall#master
+(v0.7) pkg> dev https://github.com/wookay/BlenderPlot.jl#master
 ```
+
+
+# Blender, Julia Console
+
+- Run Blender
+```sh
+~/blender-build/build_darwin/bin/blender.app/Contents/MacOS/blender
+```
+
+- Julia Console
+![julia_console.png](https://raw.github.com/wookay/BlenderPlot.jl/master/examples/blender/julia_console.png)
 
 
 ### Examples
-
-- run Blender
-- run this under the Blender Python Console
 
 ```julia
 julia> plot(sin, -2pi, 2pi)
@@ -56,7 +75,5 @@ julia> spy(sprandn(50, 120, .05))
 ```
  <img src="examples/spy.png" width="366" height="258.4" />
 
-```julia
-julia> include(Pkg.dir("BlenderPlot","examples","sphere.jl"))
-```
+- https://github.com/wookay/BlenderPlot.jl/blob/master/examples/sphere.jl
  <img src="examples/sphere.gif"/>

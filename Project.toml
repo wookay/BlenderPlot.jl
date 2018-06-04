@@ -1,0 +1,10 @@
+authors = ["WooKyoung Noh <wookay.noh@gmail.com>"]
+name = "BlenderPlot"
+uuid = "58c4e3e0-679f-11e8-1226-033aa45906d5"
+version = "0.1.0"
+
+[deps]
+PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
+ColorTypes = "3da002f7-5984-5a60-b8a6-cbb66c0b333f"
+Colors = "5ae59095-9a9b-59fe-a467-6f913c188581"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"

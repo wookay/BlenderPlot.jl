@@ -17,7 +17,7 @@ function plot_base(strokeLength, color, show_points::Bool)
     # code from https://blender.stackexchange.com/a/49013
     scene = bpy.context[:scene]
 
-    if scene[:grease_pencil] isa Void
+    if scene[:grease_pencil] isa Nothing
         areas = bpy.context[:screen][:areas]
         threedviews = [a for a in areas if a[:type] == "VIEW_3D" ]
         if isempty(threedviews)
@@ -41,7 +41,7 @@ function plot_base(strokeLength, color, show_points::Bool)
     gp = scene[:grease_pencil]
     gpl = gp[:layers][:new]("gpl", set_active=true)
     gpl[:show_points] = show_points
-    if color isa Void
+    if color isa Nothing
         color = distinguishable_colors(length(gp[:layers]), color_palettes)[end]
     end
 
@@ -59,7 +59,7 @@ function plot_base(strokeLength, color, show_points::Bool)
 
     c = RGBA(color)
     pal_color = get_color_in_palette(c, palette)
-    if pal_color isa Void
+    if pal_color isa Nothing
         pal_color = palette[:colors][:new]()
         pal_color[:color] = (c.r, c.g, c.b)
         pal_color[:alpha] = c.alpha
@@ -99,14 +99,14 @@ function lineplot(xs::AbstractVector, ys::AbstractVector; kwargs...)
     lineplot(xs, ys, zeros(length(xs)); kwargs...)
 end
 
-function lineplot(xs::AbstractVector, ys::AbstractVector, zs::AbstractVector; color::ColorT=nothing) where {ColorT <: Union{Void, RGB, RGBA}}
+function lineplot(xs::AbstractVector, ys::AbstractVector, zs::AbstractVector; color::ColorT=nothing) where {ColorT <: Union{Nothing, RGB, RGBA}}
     points = plot_base(length(xs), color, true)
     for (point, x, y, z) in zip(points, xs, ys, zs)
         point[:co] = (x, y, z)
     end
 end
 
-function lineplot(f::F, start, stop; color::ColorT=nothing) where {F <: Function, ColorT <: Union{Void, RGB, RGBA}}
+function lineplot(f::F, start, stop; color::ColorT=nothing) where {F <: Function, ColorT <: Union{Nothing, RGB, RGBA}}
     strokeLength = 500
     points = plot_base(strokeLength, color, false)
     lin = linspace(start, stop, strokeLength)
@@ -135,8 +135,8 @@ function scatterplot(verts::Vector{Any}; kwargs...)
     scatterplot(map(x->tuple(x...), verts); kwargs...)
 end
 
-function scatterplot(verts::Vector{Tuple{T,T,T}}; color::ColorT=nothing) where {T <: Real, ColorT <: Union{Void, RGB, RGBA}}
-    if color isa Void
+function scatterplot(verts::Vector{Tuple{T,T,T}}; color::ColorT=nothing) where {T <: Real, ColorT <: Union{Nothing, RGB, RGBA}}
+    if color isa Nothing
         color = color_palettes[2]
     end
     mat = bpy.data[:materials][:new]("Color")
