@@ -1,4 +1,4 @@
-import Base: select
+import Base: partialsort
 export selected_objects, active_object
 
 export clear
@@ -6,9 +6,9 @@ export GPencil
 
 export make_edge, make_face
 
-function select(name::String)
+function partialsort(name::String)
     obj = get(bpy.data[:objects], name)
-    obj[:select] = true
+    obj[:partialsort] = true
     bpy.context[:scene][:objects][:active] = obj
 end
 
@@ -39,7 +39,7 @@ function clear()
     clear(GPencil)
     candidate_list = [item[:name] for item in bpy.data[:objects] if item[:type] == "MESH"]
     for object_name in candidate_list
-        get(bpy.data[:objects], object_name)[:select] = true
+        get(bpy.data[:objects], object_name)[:partialsort] = true
     end
     bpy.ops[:object][:delete]()
     for item in bpy.data[:meshes]
