@@ -15,10 +15,10 @@ const color_palettes = [yellow, green, magenta, cyan, red, blue]
 
 function plot_base(strokeLength, color, show_points::Bool)
     # code from https://blender.stackexchange.com/a/49013
-    scene = bpy.context[:scene]
+    scene = bpy.context.scene
 
-    if scene[:grease_pencil] isa Nothing
-        areas = bpy.context[:screen][:areas]
+    if scene.grease_pencil isa Nothing
+        areas = bpy.context.screen.areas
         threedviews = [a for a in areas if a[:type] == "VIEW_3D" ]
         if isempty(threedviews)
             area = last(areas)
@@ -28,47 +28,47 @@ function plot_base(strokeLength, color, show_points::Bool)
         end
         override = Dict(
             "scene"         => scene,
-            "screen"        => bpy.context[:screen],
-            "object"        => bpy.context[:object],
+            "screen"        => bpy.context.screen,
+            "object"        => bpy.context.object,
             "area"          => area,
-            "region"        => area[:regions][1],
-            "window"        => bpy.context[:window],
-            "active_object" => bpy.context[:object]
+            "region"        => area.regions[1],
+            "window"        => bpy.context.window,
+            "active_object" => bpy.context.object,
         )
-        bpy.ops[:gpencil][:data_add](override)
+        bpy.ops.gpencil.data_add(override)
     end
 
-    gp = scene[:grease_pencil]
-    gpl = gp[:layers][:new]("gpl", set_active=true)
-    gpl[:show_points] = show_points
+    gp = scene.grease_pencil
+    gpl = gp.layers.new("gpl", set_active=true)
+    gpl.show_points = show_points
     if color isa Nothing
-        color = distinguishable_colors(length(gp[:layers]), color_palettes)[end]
+        color = distinguishable_colors(length(gp.layers), color_palettes)[end]
     end
 
-    if isempty(gpl[:frames])
-        fr = gpl[:frames][:new](1)
+    if isempty(gpl.frames)
+        fr = gpl.frames.new(1)
     else
-        fr = gpl[:frames][end]
+        fr = gpl.frames[end]
     end
 
-    if isempty(gp[:palettes])
-        palette = gp[:palettes][:new]("Palette")
+    if isempty(gp.palettes)
+        palette = gp.palettes.new("Palette")
     else
-        palette = gp[:palettes][1]
+        palette = gp.palettes[1]
     end
 
     c = RGBA(color)
     pal_color = get_color_in_palette(c, palette)
     if pal_color isa Nothing
-        pal_color = palette[:colors][:new]()
-        pal_color[:color] = (c.r, c.g, c.b)
-        pal_color[:alpha] = c.alpha
+        pal_color = palette.colors.new()
+        pal_color.color = (c.r, c.g, c.b)
+        pal_color.alpha = c.alpha
     end
 
-    str = fr[:strokes][:new](colorname = pal_color[:name])
-    str[:draw_mode] = "3DSPACE"
-    str[:points][:add](count = strokeLength)
-    points = str[:points]
+    str = fr.strokes.new(colorname = pal_color.name)
+    str.draw_mode = "3DSPACE"
+    str.points.add(count = strokeLength)
+    points = str.points
 end
 
 function plot(ys; kwargs...)
@@ -102,7 +102,7 @@ end
 function lineplot(xs::AbstractVector, ys::AbstractVector, zs::AbstractVector; color::ColorT=nothing) where {ColorT <: Union{Nothing, RGB, RGBA}}
     points = plot_base(length(xs), color, true)
     for (point, x, y, z) in zip(points, xs, ys, zs)
-        point[:co] = (x, y, z)
+        point.co = (x, y, z)
     end
 end
 
@@ -111,7 +111,7 @@ function lineplot(f::F, start, stop; color::ColorT=nothing) where {F <: Function
     points = plot_base(strokeLength, color, false)
     lin = range(start, stop=stop, length=strokeLength)
     for (idx, point) in enumerate(points)
-        point[:co] = (lin[idx], f(lin[idx]), 0)
+        point.co = (lin[idx], f(lin[idx]), 0)
     end
 end
 
@@ -139,26 +139,26 @@ function scatterplot(verts::Vector{Tuple{T,T,T}}; color::ColorT=nothing) where {
     if color isa Nothing
         color = color_palettes[2]
     end
-    mat = bpy.data[:materials][:new]("Color")
-    mat[:diffuse_color] = (color.r, color.g, color.b)
+    mat = bpy.data.materials.new("Color")
+    mat.diffuse_color = (color.r, color.g, color.b)
     for vert in verts
-        bpy.ops[:mesh][:primitive_circle_add](vertices=6, radius=0.05, fill_type="NGON", location=vert)
-        bpy.context[:object][:data][:materials][:append](mat)
+        bpy.ops.mesh.primitive_circle_add(vertices=6, radius=0.05, fill_type="NGON", location=vert)
+        bpy.context.object.data.materials.append(mat)
     end
 end
 
 function spy(sp::SparseMatrixCSC)
     cobaltblue = RGB(0, 71/255, 171/255)
     turkeyred = RGB(169/255, 17/255, 1/255)
-    positive = bpy.data[:materials][:new]("Positive")
-    positive[:diffuse_color] = (turkeyred.r, turkeyred.g, turkeyred.b)
-    negative = bpy.data[:materials][:new]("Negative")
-    negative[:diffuse_color] = (cobaltblue.r, cobaltblue.g, cobaltblue.b)
+    positive = bpy.data.materials.new("Positive")
+    positive.diffuse_color = (turkeyred.r, turkeyred.g, turkeyred.b)
+    negative = bpy.data.materials.new("Negative")
+    negative.diffuse_color = (cobaltblue.r, cobaltblue.g, cobaltblue.b)
     scale = 0.1
     rows, cols, vals = findnz(sp)
     for (row, col, val) in zip(rows, cols, vals)
         vert = scale .* (row, col, 0)
-        bpy.ops[:mesh][:primitive_circle_add](vertices=6, radius=0.05, fill_type="NGON", location=vert)
-        bpy.context[:object][:data][:materials][:append](val > 0 ? positive : negative)
+        bpy.ops.mesh.primitive_circle_add(vertices=6, radius=0.05, fill_type="NGON", location=vert)
+        bpy.context.object.data.materials.append(val > 0 ? positive : negative)
     end
 end
