@@ -1,16 +1,10 @@
-import Base: select
 export selected_objects, active_object
+export select_by_name, select_by_type
 
 export clear
 export GPencil
 
 export make_edge, make_face
-
-function select(name::String)
-    obj = get(bpy.data.objects, name)
-    obj.select = true
-    bpy.context.scene.objects.active = obj
-end
 
 function selected_objects()
     bpy.context.selected_objects
@@ -20,6 +14,16 @@ function active_object()
     bpy.context.active_object
 end
 
+function select_by_name(name::String)
+    obj = get(bpy.data.objects, name)
+    obj.select = true
+    bpy.context.scene.objects.active = obj
+end
+
+function select_by_type(typ::String)
+    bpy.ops.object.select_by_type(; :type=>typ)
+    selected_objects()
+end
 
 struct BlenderObject
     name::String

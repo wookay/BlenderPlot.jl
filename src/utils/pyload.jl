@@ -1,4 +1,4 @@
-export pyload
+export pyload, pydir
 
 @pyimport imp
 
@@ -25,4 +25,8 @@ end
 
 function Base.setproperty!(o::PyObject, name::Symbol, x)
     :o == name ? setfield!(o, name, x) : setindex!(o, x, name)
+end
+
+function pydir(o::PyObject)
+    PyObject(PyCall.@pycheckn ccall(@pysym(:PyObject_Dir), PyPtr, (PyPtr,), o))
 end
