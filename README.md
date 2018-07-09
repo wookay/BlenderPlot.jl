@@ -11,7 +11,7 @@ cd ~/blender-build
 git clone https://github.com/wookay/blender
 ```
 - Edit for your environment ([ref the commit](https://github.com/wookay/blender/commit/556f6878ea8b2c681918fa494225a0c189636121))
-- Building Blender for macOS <https://wiki.blender.org/index.php/Dev:Doc/Building_Blender/Mac>
+- Building Blender for macOS <https://wiki.blender.org/wiki/Building_Blender/Mac>
 
 - Custom linking
 ```sh
@@ -36,6 +36,7 @@ ln -s ~/blender-build/blender/release/scripts/modules
 
 ```julia
 (v0.7) pkg> add PyCall#master
+(v0.7) pkg> add ColorTypes#master
 (v0.7) pkg> add Colors#master
 (v0.7) pkg> add https://github.com/wookay/BlenderPlot.jl#master
 ```
